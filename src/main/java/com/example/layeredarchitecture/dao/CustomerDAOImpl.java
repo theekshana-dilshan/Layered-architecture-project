@@ -21,13 +21,14 @@ public class CustomerDAOImpl {
         return dtoList;
     }
 
-    public void saveCustomer(String id,String name, String address) throws SQLException, ClassNotFoundException {
+    public boolean saveCustomer(String id,String name, String address) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer (id,name, address) VALUES (?,?,?)");
         pstm.setString(1, id);
         pstm.setString(2, name);
         pstm.setString(3, address);
-        pstm.executeUpdate();
+        boolean isSaved = pstm.executeUpdate() > 0;
+        return isSaved;
     }
 
     public void updateCustomer(String id,String name, String address) throws SQLException, ClassNotFoundException {
@@ -39,11 +40,12 @@ public class CustomerDAOImpl {
         pstm.executeUpdate();
     }
 
-    public void deleteCustomer(String id) throws SQLException, ClassNotFoundException {
+    public boolean deleteCustomer(String id) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
         pstm.setString(1, id);
-        pstm.executeUpdate();
+        boolean isSaved = pstm.executeUpdate() > 0;
+        return isSaved;
     }
 
     public boolean existCustomer(String id) throws SQLException, ClassNotFoundException {

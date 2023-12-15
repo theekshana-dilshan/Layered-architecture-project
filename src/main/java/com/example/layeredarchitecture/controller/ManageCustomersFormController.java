@@ -145,9 +145,11 @@ public class ManageCustomersFormController {
                 }
 
                 CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-                customerDAO.saveCustomer(id,name,address);
+                boolean isSaved = customerDAO.saveCustomer(id, name, address);
 
-                tblCustomers.getItems().add(new CustomerTM(id, name, address));
+                if (isSaved) {
+                    tblCustomers.getItems().add(new CustomerTM(id, name, address));
+                }
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to save the customer " + e.getMessage()).show();
             } catch (ClassNotFoundException e) {
@@ -208,16 +210,13 @@ public class ManageCustomersFormController {
             }
 
             CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-            customerDAO.deleteCustomer(id);
+            boolean isDeleted = customerDAO.deleteCustomer(id);
 
-            /*Connection connection = DBConnection.getDbConnection().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
-            pstm.setString(1, id);
-            pstm.executeUpdate();*/
-
-            tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
-            tblCustomers.getSelectionModel().clearSelection();
-            initUI();
+            if (isDeleted) {
+                tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
+                tblCustomers.getSelectionModel().clearSelection();
+                initUI();
+            }
 
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to delete the customer " + id).show();
