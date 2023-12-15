@@ -145,7 +145,11 @@ public class ManageCustomersFormController {
                 }
 
                 CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-                boolean isSaved = customerDAO.saveCustomer(id, name, address);
+                CustomerDTO customerDTO = new CustomerDTO();
+                customerDTO.setId(id);
+                customerDTO.setName(name);
+                customerDTO.setAddress(address);
+                boolean isSaved = customerDAO.saveCustomer(customerDTO);
 
                 if (isSaved) {
                     tblCustomers.getItems().add(new CustomerTM(id, name, address));
@@ -165,14 +169,12 @@ public class ManageCustomersFormController {
                 }
 
                 CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-                customerDAO.updateCustomer(id,name,address);
+                CustomerDTO customerDTO = new CustomerDTO();
+                customerDTO.setId(id);
+                customerDTO.setName(name);
+                customerDTO.setAddress(address);
+                customerDAO.updateCustomer(customerDTO);
 
-                /*Connection connection = DBConnection.getDbConnection().getConnection();
-                PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
-                pstm.setString(1, name);
-                pstm.setString(2, address);
-                pstm.setString(3, id);
-                pstm.executeUpdate();*/
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the customer " + id + e.getMessage()).show();
             } catch (ClassNotFoundException e) {
@@ -227,10 +229,13 @@ public class ManageCustomersFormController {
 
     private String generateNewId() {
         try {
-            Connection connection = DBConnection.getDbConnection().getConnection();
-            ResultSet rst = connection.createStatement().executeQuery("SELECT id FROM Customer ORDER BY id DESC LIMIT 1;");
-            if (rst.next()) {
-                String id = rst.getString("id");
+            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
+            String id = customerDAO.generateNewId();
+
+            /*Connection connection = DBConnection.getDbConnection().getConnection();
+            ResultSet rst = connection.createStatement().executeQuery("SELECT id FROM Customer ORDER BY id DESC LIMIT 1;");*/
+            if (!id.isEmpty() || !(id == null)) {
+//                String id = rst.getString("id");
                 int newCustomerId = Integer.parseInt(id.replace("C00-", "")) + 1;
                 return String.format("C00-%03d", newCustomerId);
             } else {
