@@ -1,5 +1,6 @@
 package com.example.layeredarchitecture.controller;
 
+import com.example.layeredarchitecture.dao.CustomerDAO;
 import com.example.layeredarchitecture.dao.CustomerDAOImpl;
 import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
@@ -38,6 +39,7 @@ public class ManageCustomersFormController {
     public TableView<CustomerTM> tblCustomers;
     public JFXButton btnAddNewCustomer;
 
+    CustomerDAO customerDAO= new CustomerDAOImpl();
     public void initialize() {
         tblCustomers.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
         tblCustomers.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -69,7 +71,6 @@ public class ManageCustomersFormController {
         tblCustomers.getItems().clear();
         /*Get all customers*/
         try {
-            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
             ArrayList<CustomerDTO> dtoList = customerDAO.getAllCustomer();
             for(CustomerDTO customerDTO:dtoList){
                 tblCustomers.getItems()
@@ -144,11 +145,7 @@ public class ManageCustomersFormController {
                     new Alert(Alert.AlertType.ERROR, id + " already exists").show();
                 }
 
-                CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-                CustomerDTO customerDTO = new CustomerDTO();
-                customerDTO.setId(id);
-                customerDTO.setName(name);
-                customerDTO.setAddress(address);
+                CustomerDTO customerDTO = new CustomerDTO(id,name,address);
                 boolean isSaved = customerDAO.saveCustomer(customerDTO);
 
                 if (isSaved) {
@@ -168,11 +165,7 @@ public class ManageCustomersFormController {
                     new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
                 }
 
-                CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-                CustomerDTO customerDTO = new CustomerDTO();
-                customerDTO.setId(id);
-                customerDTO.setName(name);
-                customerDTO.setAddress(address);
+                CustomerDTO customerDTO = new CustomerDTO(id, name, address);
                 customerDAO.updateCustomer(customerDTO);
 
             } catch (SQLException e) {
@@ -192,14 +185,8 @@ public class ManageCustomersFormController {
 
 
     boolean existCustomer(String id) throws SQLException, ClassNotFoundException {
-        CustomerDAOImpl customerDAO = new CustomerDAOImpl();
         boolean isExists = customerDAO.existCustomer(id);
         return isExists;
-
-        /*Connection connection = DBConnection.getDbConnection().getConnection();
-        PreparedStatement pstm = connection.prepareStatement("SELECT id FROM Customer WHERE id=?");
-        pstm.setString(1, id);
-        return pstm.executeQuery().next();*/
     }
 
 
@@ -211,7 +198,6 @@ public class ManageCustomersFormController {
                 new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
             }
 
-            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
             boolean isDeleted = customerDAO.deleteCustomer(id);
 
             if (isDeleted) {
@@ -229,13 +215,9 @@ public class ManageCustomersFormController {
 
     private String generateNewId() {
         try {
-            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
             String id = customerDAO.generateNewId();
 
-            /*Connection connection = DBConnection.getDbConnection().getConnection();
-            ResultSet rst = connection.createStatement().executeQuery("SELECT id FROM Customer ORDER BY id DESC LIMIT 1;");*/
             if (!id.isEmpty() || !(id == null)) {
-//                String id = rst.getString("id");
                 int newCustomerId = Integer.parseInt(id.replace("C00-", "")) + 1;
                 return String.format("C00-%03d", newCustomerId);
             } else {
