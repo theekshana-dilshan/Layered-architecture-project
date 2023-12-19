@@ -29,6 +29,7 @@ public class OrderDAOImpl implements OrderDAO {
         connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement stm = connection.prepareStatement("SELECT oid FROM `Orders` WHERE oid=?");
         stm.setString(1, orderId);
+
         /*if order id already exist*/
         if (stm.executeQuery().next()) {
 
