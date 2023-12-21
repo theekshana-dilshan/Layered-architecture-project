@@ -1,8 +1,7 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.dao.CustomerDAO;
-import com.example.layeredarchitecture.dao.CustomerDAOImpl;
-import com.example.layeredarchitecture.db.DBConnection;
+import com.example.layeredarchitecture.dao.custom.CustomerDAO;
+import com.example.layeredarchitecture.dao.custom.impl.CustomerDAOImpl;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.view.tdm.CustomerTM;
 import com.jfoenix.controls.JFXButton;
@@ -71,7 +70,7 @@ public class ManageCustomersFormController {
         tblCustomers.getItems().clear();
         /*Get all customers*/
         try {
-            ArrayList<CustomerDTO> dtoList = customerDAO.getAllCustomer();
+            ArrayList<CustomerDTO> dtoList = customerDAO.getAll();
             for(CustomerDTO customerDTO:dtoList){
                 tblCustomers.getItems()
                         .add(new CustomerTM(customerDTO.getId(), customerDTO.getName(), customerDTO.getAddress()));
@@ -146,7 +145,7 @@ public class ManageCustomersFormController {
                 }
 
                 CustomerDTO customerDTO = new CustomerDTO(id,name,address);
-                boolean isSaved = customerDAO.saveCustomer(customerDTO);
+                boolean isSaved = customerDAO.save(customerDTO);
 
                 if (isSaved) {
                     tblCustomers.getItems().add(new CustomerTM(id, name, address));
@@ -166,7 +165,7 @@ public class ManageCustomersFormController {
                 }
 
                 CustomerDTO customerDTO = new CustomerDTO(id, name, address);
-                customerDAO.updateCustomer(customerDTO);
+                customerDAO.update(customerDTO);
 
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the customer " + id + e.getMessage()).show();
@@ -185,7 +184,7 @@ public class ManageCustomersFormController {
 
 
     boolean existCustomer(String id) throws SQLException, ClassNotFoundException {
-        boolean isExists = customerDAO.existCustomer(id);
+        boolean isExists = customerDAO.exist(id);
         return isExists;
     }
 
@@ -198,7 +197,7 @@ public class ManageCustomersFormController {
                 new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
             }
 
-            boolean isDeleted = customerDAO.deleteCustomer(id);
+            boolean isDeleted = customerDAO.delete(id);
 
             if (isDeleted) {
                 tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
