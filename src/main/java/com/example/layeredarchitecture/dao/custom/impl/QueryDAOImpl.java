@@ -1,4 +1,10 @@
 package com.example.layeredarchitecture.dao.custom.impl;
 
-public class QueryDAOImpl {
+import com.example.layeredarchitecture.dao.custom.QueryDAO;
+
+public class QueryDAOImpl implements QueryDAO {
+    @Override
+    public void customerOrderDetail() {
+        //JOIN QUERIES
+    }
 }
